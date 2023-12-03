@@ -14,7 +14,6 @@ const ProductsList = () => {
       try {
         const response = await axios.get(
           "https://localhost:8000/api/products",
-          null,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -46,8 +45,8 @@ const ProductsList = () => {
   
       // Supprime le produit supprimé de l'état
       setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId)
-      );
+        prevProducts.filter((product) => product.id !== productId));
+        
     } catch (error) {
       console.error("Erreur lors de la suppression du produit :", error);
       setMessage("Une erreur s'est produite lors de la suppression du produit.");
