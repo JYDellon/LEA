@@ -3,6 +3,7 @@ import axios from "axios";
 import { selectToken} from "../../../../redux-store/authenticationSlice";
 import { useSelector } from "react-redux";
 import ProductDeleteButton from "./ProductDeleteButton";
+import ProductUpdateButton from "./ProductUpdateButton";
 
 const ProductsList = () => {
   const token = useSelector(selectToken);
@@ -30,10 +31,16 @@ const ProductsList = () => {
     fetchData();
   }, [token]);
 
-  const handleProductDelete = async (productId) => {
+  const handleProductDeleted = ({productId}) => {
+     // Mettez à jour l'état des produits en excluant le produit supprimé
+     setProducts((products) => products.filter((product) => product.id !== productId));
+  };
+
+  const handleProductUpdated = async ({ productId, updatedProductData }) => {
     try {
-      const response = await axios.delete(
+      const response = await axios.put(
         `https://localhost:8000/api/products/${productId}`,
+        updatedProductData,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,17 +48,21 @@ const ProductsList = () => {
         }
       );
   
-      setMessage(response.data.message);
+      // Mettre à jour l'état des produits avec les données mises à jour
+      setProducts((products) =>
+        products.map((product) =>
+          product.id === productId ? response.data : product
+        )
+      );
   
-      // Supprime le produit supprimé de l'état
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product.id !== productId));
-        
+      // Afficher un message de succès ou faire d'autres actions nécessaires
+      setMessage("Le produit a été mis à jour avec succès.");
     } catch (error) {
-      console.error("Erreur lors de la suppression du produit :", error);
-      setMessage("Une erreur s'est produite lors de la suppression du produit.");
+      console.error("Erreur lors de la mise à jour du produit :", error);
     }
   };
+  
+
   
   return (
     <div className="md:col-span-3 p-4 overflow-scroll max-h-[100vh]">
@@ -86,12 +97,18 @@ const ProductsList = () => {
               <td className="p-2">{product.DescriptionCourte}</td>
               <td className="p-2">{product.DescriptionDétaillée}</td>
               <td className="p-2">{product.Conditionnement}</td>
-              <td className="p-2 md:flex gap-1">
-                <ProductDeleteButton
-                  productId={product.id}
-                  token={token}
-                  onDelete={handleProductDelete}
-                />
+
+              <td className="align-middle text-center p-2 ">
+                  <ProductUpdateButton
+                    key={product.id}
+                    productId={product.id}
+                    onProductUpdated={handleProductUpdated}
+                  />
+                  <ProductDeleteButton
+                    key={product.id}
+                    productId={product.id}
+                    onProductDeleted={handleProductDeleted}
+                  />
               </td>
             </tr>
           ))}
