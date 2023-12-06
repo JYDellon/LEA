@@ -4,6 +4,7 @@ import { selectToken} from "../../../../redux-store/authenticationSlice";
 import { useSelector } from "react-redux";
 import ProductDeleteButton from "./ProductDeleteButton";
 import ProductUpdateButton from "./ProductUpdateButton";
+import ProductReadButton from "./ProductReadButton";
 
 const ProductsList = () => {
   const token = useSelector(selectToken);
@@ -14,7 +15,7 @@ const ProductsList = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://localhost:8000/api/products",
+          "https://localhost:8000/api/admin/products",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -35,6 +36,11 @@ const ProductsList = () => {
      // Mettez à jour l'état des produits en excluant le produit supprimé
      setProducts((products) => products.filter((product) => product.id !== productId));
   };
+
+
+  const handleProductRead = ({productId}) => {
+    
+ };
 
   const handleProductUpdated = async ({ productId, updatedProductData }) => {
     try {
@@ -98,17 +104,24 @@ const ProductsList = () => {
               <td className="p-2">{product.DescriptionDétaillée}</td>
               <td className="p-2">{product.Conditionnement}</td>
 
-              <td className="align-middle text-center p-2 ">
+              <td className="align-middle text-center p-2">
+                <div className="flex items-center space-x-2">
                   <ProductUpdateButton
                     key={product.id}
                     productId={product.id}
                     onProductUpdated={handleProductUpdated}
                   />
+                  <ProductReadButton
+                    key2={product.id}
+                    productId={product.id}
+                    onProductRead={handleProductRead}
+                  />
                   <ProductDeleteButton
-                    key={product.id}
+                    key3={product.id}
                     productId={product.id}
                     onProductDeleted={handleProductDeleted}
                   />
+                </div>
               </td>
             </tr>
           ))}
