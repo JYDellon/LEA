@@ -51,7 +51,6 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
 
   const updateProduct = async () => {
     try {
-      // Envoye une requête PUT avec toutes les données mises à jour
       const response = await axios.put(
         `https://localhost:8000/api/products/${productId}`,
         updatedProductData,
@@ -63,27 +62,25 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
           timeout: 60000,
         }
       );
-  
-      // Appelle la fonction de rappel pour mettre à jour l'interface utilisateur
+
       if (onProductUpdated) {
         onProductUpdated({ productId, updatedData: response.data });
       }
-      
-      // Ferme la modale après la mise à jour réussie
+
       closeModal();
     } catch (error) {
       console.error("Erreur lors de la mise à jour du produit", error);
     }
   };
-  
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedProductData({
-      ...updatedProductData,
+    setUpdatedProductData((prevData) => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
+
 
   return (
     <div id="root">
