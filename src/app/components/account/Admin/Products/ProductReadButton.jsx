@@ -24,6 +24,7 @@ const ProductReadButton = ({ productId, onProductRead }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          timeout: 60000,
         }
       );
 
@@ -76,10 +77,10 @@ const ProductReadButton = ({ productId, onProductRead }) => {
   </table>
   <button onClick={closeModal}>Fermer</button>
 </div>
-<g id="Frame" clip-path="url(#clip0_2787_56)">
-<path id="Vector" d="M10 12.0002C10 12.5307 10.2107 13.0394 10.5858 13.4145C10.9609 13.7895 11.4696 14.0002 12 14.0002C12.5304 14.0002 13.0391 13.7895 13.4142 13.4145C13.7893 13.0394 14 12.5307 14 12.0002C14 11.4698 13.7893 10.9611 13.4142 10.586C13.0391 10.211 12.5304 10.0002 12 10.0002C11.4696 10.0002 10.9609 10.211 10.5858 10.586C10.2107 10.9611 10 11.4698 10 12.0002Z" stroke="#00819E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M21 12.0002C18.6 16.0002 15.6 18.0002 12 18.0002C8.4 18.0002 5.4 16.0002 3 12.0002C5.4 8.00024 8.4 6.00024 12 6.00024C15.6 6.00024 18.6 8.00024 21 12.0002Z" stroke="#00819E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+        <g id="Frame" clipPath="url(#clip0_2787_56)">
+        <path id="Vector" d="M10 12.0002C10 12.5307 10.2107 13.0394 10.5858 13.4145C10.9609 13.7895 11.4696 14.0002 12 14.0002C12.5304 14.0002 13.0391 13.7895 13.4142 13.4145C13.7893 13.0394 14 12.5307 14 12.0002C14 11.4698 13.7893 10.9611 13.4142 10.586C13.0391 10.211 12.5304 10.0002 12 10.0002C11.4696 10.0002 10.9609 10.211 10.5858 10.586C10.2107 10.9611 10 11.4698 10 12.0002Z" stroke="#00819E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path id="Vector_2" d="M21 12.0002C18.6 16.0002 15.6 18.0002 12 18.0002C8.4 18.0002 5.4 16.0002 3 12.0002C5.4 8.00024 8.4 6.00024 12 6.00024C15.6 6.00024 18.6 8.00024 21 12.0002Z" stroke="#00819E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </g>  
         <defs>
           <clipPath id="clip0_2787_56">
             <rect width="24" height="24" fill="white" transform="translate(0 0.000244141)" />
@@ -100,7 +101,7 @@ const ProductReadButton = ({ productId, onProductRead }) => {
     },
     content: {
       width: "900px", // Ajuste la largeur de la modale selon vos besoins
-      height: "750px", // Ajuste la hauteur de la modale selon vos besoins
+      height: "500px", // Ajuste la hauteur de la modale selon vos besoins
       overflow: "auto", // Ajoute un défilement si nécessaire
       display: "flex",
       flexDirection: "column", // Place les éléments en colonne
@@ -126,7 +127,7 @@ const ProductReadButton = ({ productId, onProductRead }) => {
                 name={fieldName}
                 value={productData[fieldName]}
                 readOnly
-                style={{ whiteSpace: "pre-wrap", width: "725px" }}
+                style={{ whiteSpace: "pre-wrap", width: "725px", height: "37px", resize: "none", border: "none" }}
               />
             </td>
           </tr>

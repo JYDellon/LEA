@@ -42,31 +42,32 @@ const ProductsList = () => {
     
  };
 
-  const handleProductUpdated = async ({ productId, updatedProductData }) => {
-    try {
-      const response = await axios.put(
-        `https://localhost:8000/api/products/${productId}`,
-        updatedProductData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-  
-      // Mettre à jour l'état des produits avec les données mises à jour
-      setProducts((products) =>
-        products.map((product) =>
-          product.id === productId ? response.data : product
-        )
-      );
-  
-      // Afficher un message de succès ou faire d'autres actions nécessaires
-      setMessage("Le produit a été mis à jour avec succès.");
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour du produit :", error);
-    }
-  };
+ const handleProductUpdated = async ({ productId, updatedProductData }) => {
+  try {
+    const response = await axios.put(
+      `https://localhost:8000/api/products/${productId}`,
+      updatedProductData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Mettre à jour l'état des produits avec les données mises à jour
+    setProducts((products) =>
+      products.map((product) =>
+        product.id === productId ? response.data : product
+      )
+    );
+
+    // Afficher un message de succès ou faire d'autres actions nécessaires
+    setMessage("Le produit a été mis à jour avec succès.");
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du produit :", error);
+  }
+};
+
   
 
   

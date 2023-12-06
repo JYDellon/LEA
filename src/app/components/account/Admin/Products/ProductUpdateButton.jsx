@@ -3,6 +3,9 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useSelector } from "react-redux";
 
+// Assurez-vous de remplacer '#root' par l'ID de l'élément racine de votre application
+Modal.setAppElement('#root');
+
 const ProductUpdateButton = ({ productId, onProductUpdated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedProductData, setUpdatedProductData] = useState({});
@@ -18,7 +21,7 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            timeout: 10000,
+            timeout: 60000,
           }
         );
 
@@ -57,6 +60,7 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
+          timeout: 60000,
         }
       );
   
@@ -82,7 +86,7 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
   };
 
   return (
-    <div>
+    <div id="root">
       <svg
         style={{ cursor: "pointer" }}
         onClick={openModal}
@@ -128,7 +132,7 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
           },
           content: {
             width: "900px", // Ajuste la largeur de la modale selon vos besoins
-            height: "750px", // Ajuste la hauteur de la modale selon vos besoins
+            height: "500px", // Ajuste la hauteur de la modale selon vos besoins
             overflow: "auto", // Ajoute un défilement si nécessaire
             display: "flex",
             flexDirection: "column", // Place les éléments en colonne
@@ -141,26 +145,27 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
         }}
       >
         <div>
-          <table style={{ margin: "auto" }}>
-            <tbody>
-              {Object.keys(updatedProductData).map((fieldName) => (
-                <tr key={fieldName}>
-                  <td width="250px">
-                    <label>{fieldName}</label>
-                  </td>
-                  <td>
-                    <textarea
-                      type="text"
-                      name={fieldName}
-                      value={updatedProductData[fieldName]}
-                      onChange={handleInputChange}
-                      style={{ whiteSpace: "pre-wrap", width: "725px" }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <table>
+              <tbody>
+                {Object.keys(updatedProductData).map((fieldName) => (
+                  <tr key={fieldName}>
+                    <td width="250px">
+                      <label>{fieldName}</label>
+                    </td>
+                    <td>
+                      <textarea
+                        type="text"
+                        name={fieldName}
+                        value={updatedProductData[fieldName]}
+                        onChange={handleInputChange}
+                        style={{ whiteSpace: "pre-wrap", width: "725px", height: "37px", resize: "none", border: "none"  }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+        </table>
+
           <div style={{ textAlign: "center" }}>
             <button
               onClick={updateProduct}
