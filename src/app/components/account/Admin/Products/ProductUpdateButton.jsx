@@ -4,7 +4,7 @@ import Modal from "react-modal";
 import { useSelector } from "react-redux";
 
 // Assurez-vous de remplacer '#root' par l'ID de l'élément racine de votre application
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 const ProductUpdateButton = ({ productId, onProductUpdated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,9 +26,9 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
         );
 
         // Initialise les données de la modale avec les données existantes
-        setUpdatedProductData(response.data);
-        // Sauvegarde les données d'origine
         setOriginalProductData(response.data);
+        // Crée une copie distincte des données pour les données mises à jour
+        setUpdatedProductData({ ...response.data });
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des données du produit",
@@ -56,8 +56,8 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
         updatedProductData,
         {
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
           },
           timeout: 60000,
         }
@@ -69,18 +69,17 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
 
       closeModal();
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du produit", error);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e, fieldName) => {
+    const { value } = e.target;
+    // Utilisez une copie distincte des données pour les modifications
     setUpdatedProductData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [fieldName]: value,
     }));
   };
-
 
   return (
     <div id="root">
@@ -144,22 +143,23 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
         <div>
         <table>
               <tbody>
-                {Object.keys(updatedProductData).map((fieldName) => (
-                  <tr key={fieldName}>
-                    <td width="250px">
-                      <label>{fieldName}</label>
-                    </td>
-                    <td>
-                      <textarea
-                        type="text"
-                        name={fieldName}
-                        value={updatedProductData[fieldName]}
-                        onChange={handleInputChange}
-                        style={{ whiteSpace: "pre-wrap", width: "725px", height: "37px", resize: "none", border: "none"  }}
-                      />
-                    </td>
-                  </tr>
-                ))}
+              {Object.keys(updatedProductData).map((fieldName) => (
+  <tr key={fieldName}>
+    <td width="250px">
+      <label>{fieldName}</label>
+    </td>
+    <td>
+      <textarea
+        type="text"
+        name={fieldName}
+        value={updatedProductData[fieldName]}
+        onChange={(e) => handleInputChange(e, fieldName)}
+        style={{ whiteSpace: "pre-wrap", width: "725px", height: "37px", resize: "none", border: "none" }}
+      />
+    </td>
+  </tr>
+))}
+
               </tbody>
         </table>
 

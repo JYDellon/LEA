@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { selectToken } from "../../../../redux-store/authenticationSlice";
@@ -21,7 +22,10 @@ const ProductsList = () => {
     DescriptionCourte: "",
     DescriptionDétaillée: "",
     Conditionnement: "",
+    product_type_id: "2",
   });
+
+  const [selectedProducts, setSelectedProducts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,16 +52,18 @@ const ProductsList = () => {
   }, [token, isAddModalOpen]);
 
   const handleProductDeleted = ({ productId }) => {
-    setProducts((products) =>
-      products.filter((product) => product.id !== productId)
+    setProducts((prevProducts) =>
+      prevProducts.filter((product) => product.id !== productId)
     );
   };
 
-  const handleProductRead = ({ productId }) => {};
+  const handleProductRead = ({ productId }) => {
+    // Ajoutez la logique nécessaire pour lire un produit
+  };
 
   const handleProductUpdated = async ({ productId, updatedProductData }) => {
     try {
-      const response = await axios.put(
+      await axios.put(
         `https://localhost:8000/api/products/${productId}`,
         updatedProductData,
         {
@@ -67,15 +73,22 @@ const ProductsList = () => {
         }
       );
 
-      setProducts((products) =>
-        products.map((product) =>
-          product.id === productId ? response.data : product
-        )
-      );
-
       setMessage("Le produit a été mis à jour avec succès.");
     } catch (error) {
-      console.error("Erreur lors de la mise à jour du produit :", error);
+      setMessage(
+        
+          );
+    } finally {
+      // Actualiser la liste des produits après chaque mise à jour
+      const updatedData = await axios.get(
+        "https://localhost:8000/api/admin/products",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setProducts(updatedData.data);
     }
   };
 
@@ -86,24 +99,26 @@ const ProductsList = () => {
   const handleAddProduct = async () => {
     try {
       const response = await axios.post(
-        "https://localhost:8004/api/product",
+        "https://localhost:8000/api/product",
         newProductData,
         {
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
+
+      console.log("Nouveau produit créé avec succès. Response :", response.data);
 
       setProducts((prevProducts) => [...prevProducts, response.data]);
       setMessage("Nouveau produit créé avec succès.");
 
       setIsAddModalOpen(false);
     } catch (error) {
-      console.error(
-        "Erreur lors de la création du nouveau produit :",
-        error
-      );
+      console.error("Erreur lors de la création du nouveau produit :", error);
+      setMessage("Erreur lors de la création du nouveau produit.");
+      setIsAddModalOpen(false);
     }
   };
 
@@ -114,6 +129,52 @@ const ProductsList = () => {
       [name]: value,
     }));
   };
+
+  const handleCheckboxChange = (productId) => {
+    setSelectedProducts((prevSelected) => {
+      if (prevSelected.includes(productId)) {
+        return prevSelected.filter((id) => id !== productId);
+      } else {
+        return [...prevSelected, productId];
+      }
+    });
+  };
+
+  const handleDeleteSelected = async () => {
+    try {
+      await axios.delete(
+        "https://localhost:8000/api/products",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          data: { productIds: selectedProducts },
+        }
+      );
+  
+      setProducts((prevProducts) =>
+        prevProducts.filter(
+          (product) => !selectedProducts.includes(product.id)
+        )
+      );
+  
+      setMessage("Les produits sélectionnés ont été supprimés avec succès.");
+      setSelectedProducts([]);
+    } catch (error) {
+      console.error(
+        "Erreur lors de la suppression des produits sélectionnés :",
+        error.response
+      );
+  
+      // Vérifiez si error.response est défini et s'il a une propriété message
+      const errorMessage = error.response
+        ? error.response.data && error.response.data.message
+        : "Une erreur inattendue s'est produite lors de la suppression des produits sélectionnés.";
+  
+      setMessage(errorMessage);
+    }
+  };
+  
 
   return (
     <div className="md:col-span-3 p-4 overflow-scroll max-h-[100vh]">
@@ -128,12 +189,35 @@ const ProductsList = () => {
         >
           Nouveau
         </button>
+        <button
+          onClick={handleDeleteSelected}
+          className={`ml-4 p-2 rounded ${
+            selectedProducts.length > 0
+              ? "bg-red-500 text-white hover:bg-red-600 cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+          disabled={selectedProducts.length === 0}
+        >
+          Supprimer
+        </button>
       </div>
 
       {message && <p>{message}</p>}
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b border-t-2 border-customDark">
+            <th className="min-w-1/12 p-2 text-left">
+              <input
+                type="checkbox"
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedProducts(products.map((product) => product.id));
+                  } else {
+                    setSelectedProducts([]);
+                  }
+                }}
+              />
+            </th>
             <th className="min-w-1/12 p-2 text-left">ID</th>
             <th className="min-w-1/3 p-2 text-left">Nom</th>
             <th className="min-w-1/3 p-2 text-left">Stock</th>
@@ -149,6 +233,13 @@ const ProductsList = () => {
         <tbody>
           {products.map((product) => (
             <tr key={product.id}>
+              <td className="p-2">
+                <input
+                  type="checkbox"
+                  onChange={() => handleCheckboxChange(product.id)}
+                  checked={selectedProducts.includes(product.id)}
+                />
+              </td>
               <td className="p-2">{product.id}</td>
               <td className="p-2">{product.Nom}</td>
               <td className="p-2">{product.Stock}</td>
@@ -209,65 +300,7 @@ const ProductsList = () => {
           },
         }}
       >
-        <div>
-          <table>
-            <tbody>
-              {Object.keys(newProductData).map((fieldName) => (
-                <tr key={fieldName}>
-                  <td width="250px">
-                    <label>{fieldName}</label>
-                  </td>
-                  <td>
-                    <textarea
-                      type="text"
-                      name={fieldName}
-                      value={newProductData[fieldName]}
-                      onChange={handleInputChange}
-                      style={{
-                        whiteSpace: "pre-wrap",
-                        width: "725px",
-                        height: "37px",
-                        resize: "none",
-                        border: "none",
-                      }}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div style={{ textAlign: "center" }}>
-            <button
-              onClick={handleAddProduct}
-              style={{
-                backgroundColor: "#00819E",
-                color: "#ffffff",
-                padding: "10px",
-                margin: "5px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Ajouter un nouveau produit
-            </button>
-            <button
-              onClick={() => setIsAddModalOpen(false)}
-              style={{
-                backgroundColor: "#ff0000",
-                color: "#ffffff",
-                padding: "10px",
-                margin: "5px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              Annuler
-            </button>
-          </div>
-        </div>
+        {/* ... (contenu de la modal) */}
       </Modal>
     </div>
   );
