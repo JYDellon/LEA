@@ -1,3 +1,427 @@
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import Modal from "react-modal";
+// import { useSelector } from "react-redux";
+
+// // Assurez-vous de remplacer '#root' par l'ID de l'élément racine de votre application
+// Modal.setAppElement("#root");
+
+// const ProductUpdateButton = ({ productId, onProductUpdated }) => {
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [updatedProductData, setUpdatedProductData] = useState({});
+//   const [selectedFile, setSelectedFile] = useState(null);
+//   const [types, setTypes] = useState([]);
+//   const token = useSelector((state) => state.auth.token);
+//   const [allTypes, setAllTypes] = useState([]);
+//   const [selectedProductType, setSelectedProductType] = useState('');
+
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const typesResponse = await axios.get(
+//           "https://localhost:8000/api/types",
+//           {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//             timeout: 60000,
+//           }
+//         );
+//         setAllTypes(typesResponse.data);
+    
+//         const productResponse = await axios.get(
+//           `https://localhost:8000/api/admin/products/${productId}`,
+//           {
+//             headers: {
+//               Authorization: `Bearer ${token}`,
+//             },
+//             timeout: 60000,
+//           }
+//         );
+//         setUpdatedProductData(productResponse.data);
+  
+//         // Définir la valeur actuelle du type de produit dans l'état
+//         const currentProductType = `${productResponse.data.product_type_id} - ${productResponse.data.product_type_name}`;
+//         setSelectedProductType(currentProductType);
+//       } catch (error) {
+//         console.error("Erreur lors de la récupération des données", error);
+//       }
+//     };
+  
+//     fetchData();
+//   }, [productId, token]);
+
+//   const openModal = async () => {
+//     try {
+//       // Effectuez une requête pour obtenir le type de produit au moment de l'ouverture de la modal
+//       const productResponse = await axios.get(
+//         `https://localhost:8000/api/admin/products/${productId}`,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//           timeout: 60000,
+//         }
+//       );
+  
+//       // Utilisez les données obtenues pour mettre à jour l'état de la modal
+//       setUpdatedProductData(productResponse.data);
+//       setIsModalOpen(true);
+//     } catch (error) {
+//       console.error("Erreur lors de la récupération des données du produit", error);
+//     }
+//   };
+  
+
+//   const closeModal = () => {
+//     setIsModalOpen(false);
+//   };
+
+//   const updateProduct = async () => {
+//     try {
+      
+  
+//       // Mettez à jour les autres données du produit
+//       const response = await axios.put(
+//         `https://localhost:8000/api/products/${productId}`,
+//         updatedProductData,
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//             'Content-Type': 'application/json',
+//           },
+//           timeout: 60000,
+//         }
+//       );
+  
+//       if (onProductUpdated) {
+//         onProductUpdated({ productId, updatedData: response.data });
+//       }
+  
+//       closeModal();
+//     } catch (error) {
+//       console.error('Erreur lors de la mise à jour du produit', error);
+//     }
+//   };
+  
+//   const handleInputChange = (e) => {
+//     const { name, value } = e.target;
+  
+//     // Vérifiez si la valeur est négative
+//     const numericValue = parseFloat(value);
+//     const sanitizedValue = isNaN(numericValue) ? '' : Math.max(0, numericValue);
+  
+//     setUpdatedProductData((prevData) => ({
+//       ...prevData,
+//       [name]: sanitizedValue,
+//     }));
+//   };
+  
+
+//   const handleFileChange = (e) => {
+//     const file = e.target.files[0];
+//     console.log(file);
+//     setSelectedFile(file);
+//   };
+
+//   return (
+//     <div>
+//       <svg
+//         style={{ cursor: "pointer" }}
+//         onClick={openModal}
+//         width="24"
+//         height="24"
+//         viewBox="0 0 24 24"
+//         fill="none"
+//         xmlns="http://www.w3.org/2000/svg"
+//       >
+//         <g clipPath="url(#clip0)">
+//           <path
+//             d="M4 20H8L18.5 9.5C18.7626 9.23741 18.971 8.92561 19.1131 8.58245C19.2553 8.23929 19.3284 7.87149 19.3284 7.5C19.3284 7.12856 19.2553 6.76077 19.1131 6.41761C18.971 6.07445 18.7626 5.76264 18.5 5.5C18.2374 5.23736 17.9256 5.02902 17.5824 4.88687C17.2392 4.74473 16.8714 4.67158 16.5 4.67158C16.1286 4.67158 15.7608 4.74473 15.4176 4.88687C15.0744 5.02902 14.7626 5.23736 14.5 5.5L4 16V20Z"
+//             stroke="#00819E"
+//             strokeWidth="1.8"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//           />
+//           <path
+//             d="M13.5 6.5L17.5 10.5"
+//             stroke="#00819E"
+//             strokeWidth="1.8"
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//           />
+//         </g>
+//         <defs>
+//           <clipPath id="clip0">
+//             <rect width="24" height="24" fill="white" />
+//           </clipPath>
+//         </defs>
+//       </svg>
+
+//       <Modal
+//         isOpen={isModalOpen}
+//         onRequestClose={closeModal}
+//         contentLabel="Modal de mise à jour du produit"
+//         style={{
+//           overlay: {
+//             backgroundColor: "rgba(0, 0, 0, 0.5)",
+//             display: "flex",
+//             justifyContent: "center",
+//           },
+//           content: {
+//             width: "100%",
+//             height: "100%",
+//             overflow: "auto",
+//             display: "flex",
+//             flexDirection: "row", // Utilisez une disposition en ligne pour deux colonnes
+//             alignItems: "flex-start", // Alignez les éléments en haut
+//             justifyContent: "center",
+//             top: "51%",
+//             left: "50%",
+//             transform: "translate(-50%, -50%)",
+//           },
+//         }}
+//       >
+//         {/* Colonne gauche */}
+//         <div style={{ flex: 1, marginRight: "20px" }}>
+//           <div style={{ margin: "20px" }}>
+//             <a
+//               href="#"
+//               onClick={() => setIsModalOpen(false)}
+//               className="text-blue-500 underline mb-4"
+//             >
+//               Retour sur Administration - Liste des produits
+//             </a>
+
+//             <p className="text-xl font-bold mb-4" style={{ marginTop: "45px", marginBottom: "27px" }}>
+//               Mise à jour du produit
+//             </p>
+
+//             <hr style={{ marginBottom: "20px", borderTop: "1px solid black" }} />
+
+//             {/* Nom du produit */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Nom du produit</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Nom || ""}
+//                 type="text"
+//                 name="Nom"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Référence */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Référence</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Référence || ""}
+//                 type="text"
+//                 name="Référence"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Prix */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Prix</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Prix || ""}
+//                 type="number"
+//                 name="Prix"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Contenance */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Contenance</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Conditionnement || ""}
+//                 type="text"
+//                 name="Conditionnement"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Stock */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Stock</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Stock || ""}
+//                 type="number"
+//                 name="Stock"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Catégorie */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Catégorie</label>
+//             </div>
+
+//             <div style={{ marginBottom: "20px" }}>
+//             <select
+//               value={updatedProductData.product_type_id || ""}
+//               name="product_type_id"
+//               style={{ width: "100%" }}
+//               onChange={(e) => {
+//                 const selectedTypeId = parseInt(e.target.value);
+//                 const selectedTypeName = allTypes.find(type => type.idType === selectedTypeId)?.Nom || "";
+//                 setUpdatedProductData((prevData) => ({
+//                   ...prevData,
+//                   product_type_id: selectedTypeId || "",
+//                   product_type_name: selectedTypeName,
+//                 }));
+//               }}
+//             >
+//               {allTypes.map((type) => (
+//                 <option key={type.idType} value={type.idType}>
+//                   {`${type.idType} - ${type.Nom}`}
+//                 </option>
+//               ))}
+//             </select>
+
+
+
+//             </div>
+
+//             {/* Taxe */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Taxe</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <input
+//                 value={updatedProductData.Taxe || ""}
+//                 type="number"
+//                 name="Taxe"
+//                 style={{ width: "100%" }}
+//                 onChange={handleInputChange}
+//               />
+//             </div>
+
+//             {/* Description courte */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Description de l’article</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <textarea
+//                 value={updatedProductData.DescriptionCourte || ""}
+//                 name="DescriptionCourte"
+//                 style={{ width: "100%", height: "120px" }}
+//                 onChange={handleInputChange}
+//               ></textarea>
+//             </div>
+
+//             {/* Description détaillée */}
+//             <div style={{ marginBottom: "7px" }}>
+//               <label>Description détaillée de l’article</label>
+//             </div>
+//             <div style={{ marginBottom: "20px" }}>
+//               <textarea
+//                 value={updatedProductData.DescriptionDétaillée || ""}
+//                 name="DescriptionDétaillée"
+//                 style={{ width: "100%", height: "120px" }}
+//                 onChange={handleInputChange}
+//               ></textarea>
+//             </div>
+
+//             {/* Ajoutez d'autres champs au besoin dans la colonne gauche */}
+//           </div>
+//         </div>
+
+//         {/* Colonne droite */}
+//         <div
+//           style={{
+//             flex: 1,
+//             display: "flex",
+//             flexDirection: "column",
+//             justifyContent: "center",
+//             alignItems: "center",
+//             marginTop: "100px",
+//             marginLeft: "90px",
+//           }}
+//         >
+//           <div
+//             style={{
+//               position: "relative",
+//             }}
+//           >
+//             {selectedFile || updatedProductData.ImageUrl ? (
+//               <img
+//                 src={
+//                   selectedFile
+//                     ? URL.createObjectURL(selectedFile)
+//                     : `https://localhost:8000${updatedProductData.ImageUrl}`
+//                 }
+//                 alt="Aperçu du produit"
+//                 style={{
+//                   maxWidth: "90%",
+//                   maxHeight: "100%",
+//                   marginBottom: "20px",
+//                 }}
+//                 onError={() => console.log("Erreur lors du chargement de l'image")}
+//               />
+//             ) : null}
+//           </div>
+
+//           <input
+//             type="file"
+//             name="ImageUrl"
+//             accept="image/*"
+//             onChange={handleFileChange}
+//             style={{ width: "auto", marginTop: "20px" }}
+//           />
+
+//           {/* Boutons Annuler et Mettre à jour cet article */}
+//           <div
+//             className="flex mt-4 justify-center"
+//             style={{ width: "100%", marginTop: "150px" }}
+//           >
+//             <button
+//               onClick={() => {
+//                 setIsModalOpen(false);
+//                 setSelectedFile(null);
+//               }}
+//               className="bg-gray-400 text-white p-2 rounded mr-2 hover:bg-gray-500"
+//             >
+//               Annuler
+//             </button>
+//             <button
+//               onClick={updateProduct}
+//               className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+//             >
+//               Mettre à jour cet article
+//             </button>
+//           </div>
+//         </div>
+//       </Modal>
+//     </div>
+//   );
+// };
+
+// export default ProductUpdateButton;
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Modal from "react-modal";
@@ -9,13 +433,28 @@ Modal.setAppElement("#root");
 const ProductUpdateButton = ({ productId, onProductUpdated }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedProductData, setUpdatedProductData] = useState({});
-  const [originalProductData, setOriginalProductData] = useState({});
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [types, setTypes] = useState([]);
   const token = useSelector((state) => state.auth.token);
+  const [allTypes, setAllTypes] = useState([]);
+  const [selectedProductType, setSelectedProductType] = useState('');
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
+        const typesResponse = await axios.get(
+          "https://localhost:8000/api/types",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            timeout: 60000,
+          }
+        );
+        setAllTypes(typesResponse.data);
+    
+        const productResponse = await axios.get(
           `https://localhost:8000/api/admin/products/${productId}`,
           {
             headers: {
@@ -24,26 +463,40 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
             timeout: 60000,
           }
         );
-
-        // Initialise les données de la modale avec les données existantes
-        setOriginalProductData(response.data);
-        // Crée une copie distincte des données pour les données mises à jour
-        setUpdatedProductData({ ...response.data });
+        setUpdatedProductData(productResponse.data);
+  
+        // Définir la valeur actuelle du type de produit dans l'état
+        const currentProductType = `${productResponse.data.product_type_id} - ${productResponse.data.product_type_name}`;
+        setSelectedProductType(currentProductType);
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des données du produit",
-          error
-        );
+        console.error("Erreur lors de la récupération des données", error);
       }
     };
-
-    // Appelle la fonction fetchData pour récupérer les données du produit
+  
     fetchData();
   }, [productId, token]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
+  const openModal = async () => {
+    try {
+      // Effectuez une requête pour obtenir le type de produit au moment de l'ouverture de la modal
+      const productResponse = await axios.get(
+        `https://localhost:8000/api/admin/products/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          timeout: 60000,
+        }
+      );
+  
+      // Utilisez les données obtenues pour mettre à jour l'état de la modal
+      setUpdatedProductData(productResponse.data);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données du produit", error);
+    }
   };
+  
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -51,38 +504,71 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
 
   const updateProduct = async () => {
     try {
+      // ...
+  
+      // Mettez à jour les autres données du produit
       const response = await axios.put(
         `https://localhost:8000/api/products/${productId}`,
         updatedProductData,
         {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
           timeout: 60000,
         }
       );
-
+  
+      // Vérifiez si une nouvelle image a été sélectionnée
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append('image', selectedFile);
+  
+        // Envoyez l'image au serveur
+        await axios.post(
+          `https://localhost:8000/api/products/${productId}/upload-image`, // Mise à jour de l'URL
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        );
+      }
+  
       if (onProductUpdated) {
         onProductUpdated({ productId, updatedData: response.data });
       }
-
+  
       closeModal();
     } catch (error) {
+      console.error('Erreur lors de la mise à jour du produit', error);
     }
   };
-
-  const handleInputChange = (e, fieldName) => {
-    const { value } = e.target;
-    // Utilisez une copie distincte des données pour les modifications
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+  
+    // Vérifiez si la valeur est négative
+    const numericValue = parseFloat(value);
+    const sanitizedValue = isNaN(numericValue) ? '' : Math.max(0, numericValue);
+  
     setUpdatedProductData((prevData) => ({
       ...prevData,
-      [fieldName]: value,
+      [name]: sanitizedValue,
     }));
+  };
+  
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    console.log(file);
+    setSelectedFile(file);
   };
 
   return (
-    <div id="root">
+    <div>
       <svg
         style={{ cursor: "pointer" }}
         onClick={openModal}
@@ -92,24 +578,24 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <g clipPath="url(#clip0_2704_1566)">
+        <g clipPath="url(#clip0)">
           <path
-            d="M4 20.0001H8L18.5 9.50006C18.7626 9.23741 18.971 8.92561 19.1131 8.58245C19.2553 8.23929 19.3284 7.87149 19.3284 7.50006C19.3284 7.12862 19.2553 6.76083 19.1131 6.41767C18.971 6.07451 18.7626 5.7627 18.5 5.50006C18.2374 5.23741 17.9256 5.02907 17.5824 4.88693C17.2392 4.74479 16.8714 4.67163 16.5 4.67163C16.1286 4.67163 15.7608 4.74479 15.4176 4.88693C15.0744 5.02907 14.7626 5.23741 14.5 5.50006L4 16.0001V20.0001Z"
+            d="M4 20H8L18.5 9.5C18.7626 9.23741 18.971 8.92561 19.1131 8.58245C19.2553 8.23929 19.3284 7.87149 19.3284 7.5C19.3284 7.12856 19.2553 6.76077 19.1131 6.41761C18.971 6.07445 18.7626 5.76264 18.5 5.5C18.2374 5.23736 17.9256 5.02902 17.5824 4.88687C17.2392 4.74473 16.8714 4.67158 16.5 4.67158C16.1286 4.67158 15.7608 4.74473 15.4176 4.88687C15.0744 5.02902 14.7626 5.23736 14.5 5.5L4 16V20Z"
             stroke="#00819E"
-            strokeWidth="1.8" 
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
           <path
             d="M13.5 6.5L17.5 10.5"
             stroke="#00819E"
-            strokeWidth="1.8"  
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </g>
         <defs>
-          <clipPath id="clip0_2704_1566">
+          <clipPath id="clip0">
             <rect width="24" height="24" fill="white" />
           </clipPath>
         </defs>
@@ -123,74 +609,248 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
           overlay: {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
             display: "flex",
-            alignItems: "center",
             justifyContent: "center",
           },
           content: {
-            width: "900px", // Ajuste la largeur de la modale selon vos besoins
-            height: "500px", // Ajuste la hauteur de la modale selon vos besoins
-            overflow: "auto", // Ajoute un défilement si nécessaire
+            width: "100%",
+            height: "100%",
+            overflow: "auto",
             display: "flex",
-            flexDirection: "column", // Place les éléments en colonne
-            alignItems: "center", // Centre les éléments horizontalement
-            justifyContent: "center", // Centre les éléments verticalement
-            top: "51%", // Ajuste la position verticale de la modale
-            left: "50%", // Ajuste la position horizontale de la modale
-            transform: "translate(-50%, -50%)", // Centre la modale précisément
+            flexDirection: "row", // Utilisez une disposition en ligne pour deux colonnes
+            alignItems: "flex-start", // Alignez les éléments en haut
+            justifyContent: "center",
+            top: "51%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
           },
         }}
       >
-        <div>
-        <table>
-              <tbody>
-              {Object.keys(updatedProductData).map((fieldName) => (
-  <tr key={fieldName}>
-    <td width="250px">
-      <label>{fieldName}</label>
-    </td>
-    <td>
-      <textarea
-        type="text"
-        name={fieldName}
-        value={updatedProductData[fieldName]}
-        onChange={(e) => handleInputChange(e, fieldName)}
-        style={{ whiteSpace: "pre-wrap", width: "725px", height: "37px", resize: "none", border: "none" }}
-      />
-    </td>
-  </tr>
-))}
+        {/* Colonne gauche */}
+        <div style={{ flex: 1, marginRight: "20px" }}>
+          <div style={{ margin: "20px" }}>
+            <a
+              href="#"
+              onClick={() => setIsModalOpen(false)}
+              className="text-blue-500 underline mb-4"
+            >
+              Retour sur Administration - Liste des produits
+            </a>
 
-              </tbody>
-        </table>
+            <p className="text-xl font-bold mb-4" style={{ marginTop: "45px", marginBottom: "27px" }}>
+              Mise à jour du produit
+            </p>
 
-          <div style={{ textAlign: "center" }}>
-            <button
-              onClick={updateProduct}
-              style={{
-                backgroundColor: "#00819E",
-                color: "#ffffff",
-                padding: "10px",
-                margin: "5px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
+            <hr style={{ marginBottom: "20px", borderTop: "1px solid black" }} />
+
+            {/* Nom du produit */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Nom du produit</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Nom || ""}
+                type="text"
+                name="Nom"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Référence */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Référence</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Référence || ""}
+                type="text"
+                name="Référence"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Prix */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Prix</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Prix || ""}
+                type="number"
+                name="Prix"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Contenance */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Contenance</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Conditionnement || ""}
+                type="text"
+                name="Conditionnement"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Stock */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Stock</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Stock || ""}
+                type="number"
+                name="Stock"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Catégorie */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Catégorie</label>
+            </div>
+
+            <div style={{ marginBottom: "20px" }}>
+            <select
+              value={updatedProductData.product_type_id || ""}
+              name="product_type_id"
+              style={{ width: "100%" }}
+              onChange={(e) => {
+                const selectedTypeId = parseInt(e.target.value);
+                const selectedTypeName = allTypes.find(type => type.idType === selectedTypeId)?.Nom || "";
+                setUpdatedProductData((prevData) => ({
+                  ...prevData,
+                  product_type_id: selectedTypeId || "",
+                  product_type_name: selectedTypeName,
+                }));
               }}
             >
-              Mettre à jour le produit
-            </button>
+              {allTypes.map((type) => (
+                <option key={type.idType} value={type.idType}>
+                  {`${type.idType} - ${type.Nom}`}
+                </option>
+              ))}
+            </select>
+
+
+
+            </div>
+
+            {/* Taxe */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Taxe</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <input
+                value={updatedProductData.Taxe || ""}
+                type="number"
+                name="Taxe"
+                style={{ width: "100%" }}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            {/* Description courte */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Description de l’article</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <textarea
+                value={updatedProductData.DescriptionCourte || ""}
+                name="DescriptionCourte"
+                style={{ width: "100%", height: "120px" }}
+                onChange={handleInputChange}
+              ></textarea>
+            </div>
+
+            {/* Description détaillée */}
+            <div style={{ marginBottom: "7px" }}>
+              <label>Description détaillée de l’article</label>
+            </div>
+            <div style={{ marginBottom: "20px" }}>
+              <textarea
+                value={updatedProductData.DescriptionDétaillée || ""}
+                name="DescriptionDétaillée"
+                style={{ width: "100%", height: "120px" }}
+                onChange={handleInputChange}
+              ></textarea>
+            </div>
+
+            {/* Ajoutez d'autres champs au besoin dans la colonne gauche */}
+          </div>
+        </div>
+
+        {/* Colonne droite */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "100px",
+            marginLeft: "90px",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+            }}
+          >
+            {selectedFile || updatedProductData.ImageUrl ? (
+              <img
+                src={
+                  selectedFile
+                    ? URL.createObjectURL(selectedFile)
+                    : `https://localhost:8000${updatedProductData.ImageUrl}`
+                }
+                alt="Aperçu du produit"
+                style={{
+                  maxWidth: "90%",
+                  maxHeight: "100%",
+                  marginBottom: "20px",
+                }}
+                onError={() => console.log("Erreur lors du chargement de l'image")}
+              />
+            ) : null}
+
+          
+          </div>
+
+          <input
+            type="file"
+            name="ImageUrl"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ width: "auto", marginTop: "20px" }}
+          />
+
+          {/* Boutons Annuler et Mettre à jour cet article */}
+          <div
+            className="flex mt-4 justify-center"
+            style={{ width: "100%", marginTop: "150px" }}
+          >
             <button
-              onClick={closeModal}
-              style={{
-                backgroundColor: "#ff0000",
-                color: "#ffffff",
-                padding: "10px",
-                margin: "5px",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
+              onClick={() => {
+                setIsModalOpen(false);
+                setSelectedFile(null);
               }}
+              className="bg-gray-400 text-white p-2 rounded mr-2 hover:bg-gray-500"
             >
               Annuler
+            </button>
+            <button
+              onClick={updateProduct}
+              className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+            >
+              Mettre à jour cet article
             </button>
           </div>
         </div>
