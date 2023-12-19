@@ -11,3 +11,4 @@ export const URL_ADMIN = '/admin';
 export const URL_ADMIN_DASHBOARD = '/admin/tableau-de-bord'
 export const URL_USERSLIST = '/admin/liste-utilisateurs';
 export const URL_PRODUCTSLIST = '/admin/Liste-produits';
+export const URL_PRODUCTSTYPE = '/admin/Type-de-produits';

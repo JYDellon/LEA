@@ -7,30 +7,32 @@ import ProductUpdateButton from "./ProductUpdateButton";
 import ProductReadButton from "./ProductReadButton";
 import Modal from "react-modal";
 
-const ProductsList = () => {
+  const ProductsList = () => {
+    const [newProductId, setNewProductId] = useState(null);
   const token = useSelector(selectToken);
   const [products, setProducts] = useState([]);
   const [types, setTypes] = useState([]);
   const [message, setMessage] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newProductData, setNewProductData] = useState({
+    product_type_id: "",
     name: "",
     stock: "",
     reference: "",
     price: "",
-    taxe: "",
-    description: "",
+    Taxe: "",
+    Description: "",
     detailedDescription: "",
     mesurement: "",
-    slug:"kuyfkf",
-    product_type_id: "",
-    imagePath: "",
+    slug:"",
+    typeName: "",
+    image: "",
     created_at: new Date().toISOString().split('.')[0],
   });
 
-  const [selectedProducts, setSelectedProducts] = useState([]);
-  const [selectedFile, setSelectedFile] = useState(null);
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -109,10 +111,30 @@ const ProductsList = () => {
   };
 
   const handleAddProduct = async () => {
+    // Vérification si la référence est vide ou nulle
+    if (!newProductData.reference) {
+      setMessage("Veuillez saisir une référence pour le produit.");
+      return;
+    }
+  
+    // Créez un objet représentant les données du produit
+    const productData = {
+      name: newProductData.name,
+      reference: newProductData.reference,
+      price: newProductData.price,
+      mesurement: newProductData.mesurement,
+      stock: newProductData.stock,
+      product_type_id: newProductData.product_type_id,
+      Taxe: newProductData.Taxe,
+      Description: newProductData.Description,
+      detailed_description: newProductData.detailed_description,
+      created_at: newProductData.created_at,
+    };
+  
     try {
       const response = await axios.post(
         "https://localhost:8000/api/product",
-        JSON.stringify(newProductData),
+        productData,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -120,15 +142,71 @@ const ProductsList = () => {
           },
         }
       );
-      setProducts((prevProducts) => [...prevProducts, response.data]);
-      setMessage("Nouveau produit créé avec succès.");
-      setIsAddModalOpen(false);
+      
+      // Assurez-vous de passer le bon ID à handleUploadImage et handleUpload
+      const newProductId = response.data.id;
+      setNewProductId(newProductId);
+      handleUploadImage(newProductId);
+      handleUpload(newProductId);
+      // Réinitialise la modal ici, après la gestion du téléchargement
+      resetModal();
     } catch (error) {
+    
       console.error("Erreur lors de la création du nouveau produit :", error);
-      setMessage("Erreur lors de la création du nouveau produit.");
+  
+      setMessage(`Erreur lors de la création du nouveau produit : ${error.message || error.response?.data?.message}`);
       setIsAddModalOpen(false);
     }
-};
+  };
+  
+  
+  const resetModal = () => {
+    setIsAddModalOpen(false);
+    resetFilePreview();
+  };
+  
+  const handleUploadFile = () => {
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    fetch(`https://localhost:8000/api/products/52/upload-image2`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    })
+      .then(response => response.json())
+      .then(data => console.log(data))
+      .catch(error => console.error('Erreur lors de la requête:', error));
+  };
+  
+  
+  const handleUploadImage = async (productId) => {
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+  
+      const response = await fetch(`https://localhost:8000/api/products/${productId}/upload-image2`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-XSRF-TOKEN': 'your-xsrf-token', // Assurez-vous d'ajuster cela en fonction de votre configuration
+        },
+      });
+
+  
+      console.log('Image upload successful:', response.data);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
+  };
+  
+  
+  
+  
+  
+  
 
 
   const handleInputChange = (e) => {
@@ -138,6 +216,7 @@ const ProductsList = () => {
       [name]: value,
     }));
   };
+  
 
   const handleCheckboxChange = (productId) => {
     setSelectedProducts((prevSelected) => {
@@ -185,19 +264,21 @@ const ProductsList = () => {
 
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
+    console.log("Fichier sélectionné :", e.target.files[0].name);
   };
+  
 
-  const handleUpload = async () => {
+  const handleUpload = async (productId) => {
     if (!selectedFile) {
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("file", selectedFile);
-
+  
     try {
       const response = await axios.post(
-        "https://localhost:8000/api/upload",
+        `https://localhost:8000/api/products/${productId}/upload-image2`,
         formData,
         {
           headers: {
@@ -206,22 +287,24 @@ const ProductsList = () => {
           },
         }
       );
-
+  
       setNewProductData((prevData) => ({
         ...prevData,
-        imagePath: response.data.path,
+        image: response.data.path, // Assurez-vous que le nom de la propriété est correct
       }));
-
+  
       console.log("Fichier téléchargé avec succès. Réponse :", response.data);
     } catch (error) {
       console.error("Erreur lors du téléchargement du fichier :", error);
     }
   };
+  
+  
 
   const resetFilePreview = () => {
     setSelectedFile(null);
   };
-
+  
   return (
     <div className="md:col-span-3 p-4 overflow-scroll max-h-[100vh]">
       <h1 className="text-2xl mb-10 font-bold">
@@ -325,6 +408,7 @@ const ProductsList = () => {
         onRequestClose={() => {
           setIsAddModalOpen(false);
           resetFilePreview(); // Réinitialise l'aperçu du fichier lorsque la modal est fermée
+          resetModal(); 
         }}
         contentLabel="Modal d'ajout d'un nouveau produit"
         style={{
@@ -530,31 +614,41 @@ const ProductsList = () => {
           )}
         </div>
 
-        <input
-          type="file"
-          name="productImage"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ width: "auto", marginTop: "20px" }}
-        />
-
+        
+          <input
+            type="file"
+            name="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{ width: "auto", marginTop: "20px" }}
+          />
         {/* Boutons Annuler et Créer cet article */}
         <div className="flex mt-4 justify-center" style={{ width: "100%", marginTop: "150px" }}>
           <button
             onClick={() => {
-              setIsAddModalOpen(false);
-              setselectedFile(null);
+              resetModal();
+              setSelectedFile(null);
             }}
             className="bg-gray-400 text-white p-2 rounded mr-2 hover:bg-gray-500"
           >
             Annuler
           </button>
           <button
-            onClick={handleAddProduct}
-            className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-          >
-            Créer cet article
-          </button>
+          onClick={async () => {
+            await handleAddProduct(); // Assurez-vous que handleAddProduct est exécuté avant handleUpload
+            // Passez l'ID du nouveau produit à handleUpload
+            handleUpload(newProductId); // Remplacez newProductId par l'ID réel du nouveau produit
+          }}
+          className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+        >
+          Créer cet article
+        </button>
+
+<button onClick={handleUploadFile}>Télécharger le fichier</button>
+
+
+
+
         </div>
       </div>
     </Modal>

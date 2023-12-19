@@ -110,8 +110,9 @@ const MenuAdmin = () => {
         Gestion de produits
       </h3>
       <ul>
-      <Link to={URL.URL_PRODUCTSLIST}>Liste des produits</Link>
-        <li>Type de produit</li>
+        <li><Link to={URL.URL_PRODUCTSLIST}>Liste des produits</Link></li>
+        <li> <Link to={URL.URL_PRODUCTSTYPE}>Type de produit</Link></li>
+       
       </ul>
       <h3 className="text-size16 flex items-center gap-3">
         <svg

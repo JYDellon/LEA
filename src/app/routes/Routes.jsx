@@ -24,7 +24,7 @@ import { PrivateRoute } from "./PrivateRoute";
 import UsersList from "../components/account/Admin/UsersList/UsersList";
 import Profile from "../components/account/Admin/Profile/Profile";
 import ProductsList from "../components/account/Admin/Products/ProductsList";
-
+import ProductsType from "../components/account/Admin/Products/ProductsType";
 /**
  * Routes of the application
  * with public and private route
@@ -54,7 +54,7 @@ const Routes = () => {
           <Route path={URL.URL_USERSLIST} element={<PrivateRoute roles={[ROLE_ADMIN]}><UsersList /></PrivateRoute>} />
           <Route path={URL.URL_ADMIN_DASHBOARD} element={<PrivateRoute roles={[ROLE_ADMIN]}><Profile /></PrivateRoute>} />
           <Route path={URL.URL_PRODUCTSLIST} element={<PrivateRoute roles={[ROLE_ADMIN]}><ProductsList /></PrivateRoute>} />
-        
+          <Route path={URL.URL_PRODUCTSTYPE} element={<PrivateRoute roles={[ROLE_ADMIN]}><ProductsType /></PrivateRoute>} />
         </Route>
 
         {/* UTILISATEURS*/}
