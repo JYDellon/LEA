@@ -78,10 +78,11 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
     setIsModalOpen(false);
   };
 
+
+
   const updateProduct = async () => {
     try {
-      // ...
-  
+      
       // Mettez à jour les autres données du produit
       const response = await axios.put(
         `https://localhost:8000/api/products/${productId}`,
@@ -145,19 +146,16 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
 
   };
   
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
   
-    // Vérifiez si la valeur est négative
-    const numericValue = parseFloat(value);
-    const sanitizedValue = isNaN(numericValue) ? '' : Math.max(0, numericValue);
-  
+    // Mise à jour de l'état avec la nouvelle valeur
     setUpdatedProductData((prevData) => ({
       ...prevData,
-      [name]: sanitizedValue,
+      [name]: value,
     }));
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -234,7 +232,7 @@ const ProductUpdateButton = ({ productId, onProductUpdated }) => {
             </a>
 
             <p className="text-xl font-bold mb-4" style={{ marginTop: "45px", marginBottom: "27px" }}>
-              Mise à jour du produit
+              Mise à jour du type
             </p>
 
             <hr style={{ marginBottom: "20px", borderTop: "1px solid black" }} />

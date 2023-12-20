@@ -50,10 +50,6 @@ const [newTypeData, setNewTypeData] = useState({
         setProducts(productsResponse.data);
         setTypes(typesResponse.data);
       } catch (error) {
-        console.error(
-          "Erreur lors de la récupération des données produit :",
-          error
-        );
       }
     };
 
@@ -74,8 +70,6 @@ const [newTypeData, setNewTypeData] = useState({
       setTypes((prevTypes) => prevTypes.filter((type) => type.idType !== productId));
       setMessage(`Type ${productId} supprimé avec succès.`);
     } catch (error) {
-      console.error(`Erreur lors de la suppression du type ${productId} :`, error);
-      setMessage(`Erreur lors de la suppression du type ${productId}.`);
     }finally {
       handleReloadTypes(); // Recharger la liste des types
     }
@@ -97,7 +91,6 @@ const [newTypeData, setNewTypeData] = useState({
   
       setMessage("Le type a été mis à jour avec succès.");
     } catch (error) {
-      setMessage("Erreur lors de la mise à jour du produit.");
     } finally {
       setIsAddModalOpen(false); // Fermer la modal
       handleReloadTypes(); // Recharger la liste des types
@@ -145,8 +138,6 @@ const handleTypeAdded = () => {
       setTypes((prevTypes) => [...prevTypes, response.data]);
       setMessage("Nouveau type créé avec succès.");
     } catch (error) {
-      console.error("Erreur lors de la création du nouveau type :", error);
-      setMessage("Erreur lors de la création du nouveau type.");
     } finally {
       setIsAddModalOpen(false); // Fermer la modal
     }
@@ -178,7 +169,6 @@ const handleTypesReload = (reloadedTypes) => {
       );
       setTypes(typesResponse.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données type :", error);
     }
   };
 
@@ -206,7 +196,6 @@ const handleTypesReload = (reloadedTypes) => {
       // Mettez à jour l'état ou effectuez d'autres actions si nécessaire
       console.log(response.data);
     } catch (error) {
-      console.error("Erreur lors de la suppression des types :", error);
     }finally {
       handleReloadTypes(); // Recharge la liste des types
     }
@@ -228,7 +217,6 @@ const handleTypesReload = (reloadedTypes) => {
       );
       setTypes(typesResponse.data);
     } catch (error) {
-      console.error("Erreur lors du rechargement des types :", error);
     }
   };
   

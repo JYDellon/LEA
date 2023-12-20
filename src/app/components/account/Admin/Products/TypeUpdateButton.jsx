@@ -25,7 +25,7 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            timeout: 60000,
+            timeout: 10000,
           }
         );
         setAllTypes(typesResponse.data);
@@ -36,17 +36,17 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-            timeout: 60000,
+            timeout: 10000,
           }
         );
         setUpdatedProductData(productResponse.data);
   
-        // Définir la valeur actuelle du type de produit dans l'état
+        // Définir la valeur actuelle du type de type dans l'état
         
         setSelectedProductType(currentProductType);
       } catch (error) {
         fetchTypes(); 
-        console.error("Erreur lors de la récupération des données", error);
+        
       }
     };
   
@@ -56,14 +56,14 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
 
   const openModal = async () => {
     try {
-      // Effectuez une requête pour obtenir le type de produit au moment de l'ouverture de la modal
+      // Effectuez une requête pour obtenir le type de type au moment de l'ouverture de la modal
       const productResponse = await axios.get(
         `https://localhost:8000/api/types/${productId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          timeout: 60000,
+          timeout: 10000,
         }
       );
   
@@ -71,7 +71,6 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
       setUpdatedProductData(productResponse.data);
       setIsModalOpen(true);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données du produit", error);
     }
   };
   
@@ -83,12 +82,11 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          timeout: 60000,
+          timeout: 10000,
         }
       );
       setAllTypes(typesResponse.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des types", error);
     }
   };
 
@@ -113,7 +111,7 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        timeout: 60000,
+        timeout: 10000,
       }
     );
 
@@ -130,7 +128,6 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
       fetchTypes();
   } catch (error) {
     fetchTypes(); 
-    console.error('Erreur lors de la mise à jour du type', error);
   }
 };
 
@@ -148,7 +145,6 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    console.log(file);
     setSelectedFile(file);
   };
 
@@ -187,106 +183,84 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
       </svg>
 
       <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        contentLabel="Modal de mise à jour du produit"
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            justifyContent: "center",
-          },
-          content: {
-            width: "100%",
-            height: "100%",
-            overflow: "auto",
-            display: "flex",
+  isOpen={isModalOpen}
+  onRequestClose={closeModal}
+  contentLabel="Modal de mise à jour du type"
+  style={{
+    overlay: {
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    content: {
+      width: "100%",  // ajustez la largeur comme vous le souhaitez
+      height: "100%",
+      overflow: "auto",
+      display: "flex",
             flexDirection: "row", // Utilisez une disposition en ligne pour deux colonnes
             alignItems: "flex-start", // Alignez les éléments en haut
             justifyContent: "center",
-            top: "51%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-          },
-        }}
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+    },
+  }}
+>
+  <div>
+    <div style={{ margin: "20px" }}>
+      <a
+        href="#"
+        onClick={() => setIsModalOpen(false)}
+        className="text-blue-500 underline mb-4"
       >
-        {/* Colonne gauche */}
-        <div style={{ flex: 1, marginRight: "20px" }}>
-          <div style={{ margin: "20px" }}>
-            <a
-              href="#"
-              onClick={() => setIsModalOpen(false)}
-              className="text-blue-500 underline mb-4"
-            >
-              Retour sur Administration - Liste des types
-            </a>
+        Retour sur Administration - Liste des types
+      </a>
 
-            <p className="text-xl font-bold mb-4" style={{ marginTop: "45px", marginBottom: "27px" }}>
-              Mise à jour du produit
-            </p>
+      <p className="text-xl font-bold mb-4" style={{ marginTop: "45px", marginBottom: "27px" }}>
+        Mise à jour du type
+      </p>
 
-            <hr style={{ marginBottom: "20px", borderTop: "1px solid black" }} />
+      <hr style={{ marginBottom: "20px", borderTop: "1px solid black" }} />
 
+      {/* Nom du type */}
+      <div style={{ marginBottom: "7px" }}>
+        <label>Nom du type</label>
+      </div>
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          value={updatedProductData.Nom || ""}
+          type="text"
+          name="Nom"
+          style={{ width: "100%" }}
+          onChange={handleInputChange}
+        />
+      </div>
 
+      {/* Ajoutez d'autres champs au besoin */}
+    </div>
 
+    {/* Boutons Annuler et Mettre à jour cet article */}
+    <div className="flex mt-4 justify-center" style={{ width: "100%" }}>
+      <button
+        onClick={() => {
+          setIsModalOpen(false);
+          setSelectedFile(null);
+        }}
+        className="bg-gray-400 text-white p-2 rounded mr-2 hover:bg-gray-500"
+      >
+        Annuler
+      </button>
+      <button
+        onClick={updateType}
+        className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
+      >
+        Mettre à jour ce type
+      </button>
+    </div>
+  </div>
+</Modal>
 
-            {/* Nom du type */}
-            <div style={{ marginBottom: "7px" }}>
-              <label>Nom du type</label>
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-            <input
-  value={updatedProductData.Nom || ""}
-  type="text"
-  name="Nom"  // Assurez-vous que cela correspond au nom du champ attendu dans le backend
-  style={{ width: "100%" }}
-  onChange={handleInputChange}
-/>
-
-            </div>
-
-
-            {/* Ajoutez d'autres champs au besoin dans la colonne gauche */}
-          </div>
-        </div>
-
-        {/* Colonne droite */}
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "100px",
-            marginLeft: "90px",
-          }}
-        >
-          
-
-          {/* Boutons Annuler et Mettre à jour cet article */}
-          <div
-            className="flex mt-4 justify-center"
-            style={{ width: "100%" }}
-          >
-            <button
-              onClick={() => {
-                setIsModalOpen(false);
-                setSelectedFile(null);
-              }}
-              className="bg-gray-400 text-white p-2 rounded mr-2 hover:bg-gray-500"
-            >
-              Annuler
-            </button>
-            <button
-              onClick={updateType}
-              className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
-            >
-              Mettre à jour ce type
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };
