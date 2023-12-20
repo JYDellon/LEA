@@ -231,7 +231,7 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
 
 
             {/* Nom du type */}
-            <div style={{ marginBottom: "7px", marginTop: "122px" }}>
+            <div style={{ marginBottom: "7px" }}>
               <label>Nom du type</label>
             </div>
             <div style={{ marginBottom: "20px" }}>
@@ -267,7 +267,7 @@ const TypeUpdateButton = ({ productId, onTypeUpdated }) => {
           {/* Boutons Annuler et Mettre à jour cet article */}
           <div
             className="flex mt-4 justify-center"
-            style={{ width: "100%",marginTop: "200px" }}
+            style={{ width: "100%" }}
           >
             <button
               onClick={() => {

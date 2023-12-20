@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { selectToken } from "../../../../redux-store/authenticationSlice";
@@ -6,7 +7,8 @@ import TypeDeleteButton from "./TypeDeleteButton";
 import TypeUpdateButton from "./TypeUpdateButton";
 import Modal from "react-modal";
 
-const ProductsList = () => {
+const ProductsType = () => {
+
   const token = useSelector(selectToken);
   const [products, setProducts] = useState([]);
   const [types, setTypes] = useState([]);
@@ -58,11 +60,28 @@ const [newTypeData, setNewTypeData] = useState({
     fetchData();
   }, [token, isAddModalOpen]);
 
-  const handleTypeDeleted = ({ productId }) => {
-    setProducts((prevProducts) =>
-      prevProducts.filter((type) => type.idType !== productId)
-    );
+
+
+  const handleTypeDeleted = async ({ productId }) => {
+    try {
+      await axios.delete(`https://localhost:8000/api/types/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+  
+      // Mettez à jour l'état local pour refléter la suppression du type
+      setTypes((prevTypes) => prevTypes.filter((type) => type.idType !== productId));
+      setMessage(`Type ${productId} supprimé avec succès.`);
+    } catch (error) {
+      console.error(`Erreur lors de la suppression du type ${productId} :`, error);
+      setMessage(`Erreur lors de la suppression du type ${productId}.`);
+    }finally {
+      handleReloadTypes(); // Recharger la liste des types
+    }
   };
+  
+
 
   const handleTypeUpdated = async ({ productId, updatedProductData }) => {
     try {
@@ -83,6 +102,7 @@ const [newTypeData, setNewTypeData] = useState({
       setIsAddModalOpen(false); // Fermer la modal
       handleReloadTypes(); // Recharger la liste des types
     }
+   
   };
 
 
@@ -158,7 +178,7 @@ const handleTypesReload = (reloadedTypes) => {
       );
       setTypes(typesResponse.data);
     } catch (error) {
-      console.error("Erreur lors de la récupération des données produit :", error);
+      console.error("Erreur lors de la récupération des données type :", error);
     }
   };
 
@@ -170,6 +190,50 @@ const handleTypesReload = (reloadedTypes) => {
     setSelectedFile(null);
   };
 
+  const handleDeleteButtonClick = async () => {
+    try {
+      const response = await axios.delete(
+        "https://localhost:8000/api/types",
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          data: { selectedProducts },
+        }
+      );
+  
+      // Mettez à jour l'état ou effectuez d'autres actions si nécessaire
+      console.log(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la suppression des types :", error);
+    }finally {
+      handleReloadTypes(); // Recharge la liste des types
+    }
+
+
+
+  };
+ 
+  const handleReloadTypes = async () => {
+    try {
+      console.log('Reloading types...');
+      const typesResponse = await axios.get(
+        "https://localhost:8000/api/types",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setTypes(typesResponse.data);
+    } catch (error) {
+      console.error("Erreur lors du rechargement des types :", error);
+    }
+  };
+  
+
+  
   return (
     <div className="md:col-span-3 p-4 overflow-scroll max-h-[100vh]">
       <h1 className="text-2xl mb-10 font-bold">
@@ -177,18 +241,29 @@ const handleTypesReload = (reloadedTypes) => {
       </h1>
 
       <div className="mb-4">
-        
-        <button
-  onClick={() => {
-    setIsAddModalOpen(true);
-    resetFilePreview(); // Réinitialise l'aperçu du fichier lorsque la modal est ouverte
-  }}
-  className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
->
-  Nouveau
-</button>
+  <button
+    onClick={() => {
+      setIsAddModalOpen(true);
+      resetFilePreview();
+    }}
+    className="bg-green-500 text-white p-2 rounded hover:bg-green-600 mr-2"
+  >
+    Nouveau
+  </button>
 
-      </div>
+  <button
+    onClick={handleDeleteButtonClick}
+    className={`ml-4 p-2 rounded ${
+      selectedProducts.length > 0
+        ? "bg-red-500 text-white hover:bg-red-600 cursor-pointer"
+        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+    }`}
+    disabled={selectedProducts.length === 0}
+  >
+    Supprimer
+  </button>
+</div>
+
 
       {message && <p>{message}</p>}
       <table className="w-full border-collapse">
@@ -310,7 +385,7 @@ const handleTypesReload = (reloadedTypes) => {
         {/* Boutons Annuler et Créer ce type */}
 <div
   className="flex mt-4 justify-center"
-  style={{ width: "100%", marginTop: "00px" }}
+  style={{ width: "100%", marginTop: "0px" }}
 >
 <button
               onClick={() => {
@@ -322,7 +397,7 @@ const handleTypesReload = (reloadedTypes) => {
               Annuler
             </button>
             <button
-              onClick={() => handleAddType(handleTypeAdded)}
+              onClick={() => handleAddType()}
               className="bg-green-500 text-white p-2 rounded hover:bg-green-600"
             >
               Créer ce type
@@ -336,4 +411,4 @@ const handleTypesReload = (reloadedTypes) => {
   );
 };
 
-export default ProductsList;
+export default ProductsType;

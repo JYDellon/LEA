@@ -25,8 +25,8 @@ const TypeDeleteButton = ({ productId, onTypeDeleted }) => {
       setMessage(response.data.message);
   
       // Appeler la fonction de rappel pour mettre à jour l'interface utilisateur
-      if (onProductDeleted) {
-        onProductDeleted({ productId });
+      if (onTypeDeleted) {
+        onTypeDeleted({ productId });
       }
     } catch (error) {
       console.error(
@@ -35,6 +35,8 @@ const TypeDeleteButton = ({ productId, onTypeDeleted }) => {
       );
       setMessage("Une erreur s'est produite lors de la suppression du produit");
     }
+
+    
   };
   
   return (
