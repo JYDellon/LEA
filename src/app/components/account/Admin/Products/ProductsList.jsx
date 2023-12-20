@@ -165,22 +165,7 @@ import Modal from "react-modal";
     resetFilePreview();
   };
   
-  const handleUploadFile = () => {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-
-    fetch(`https://localhost:8000/api/products/52/upload-image2`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-      body: formData,
-    })
-      .then(response => response.json())
-      .then(data => console.log(data))
-      .catch(error => console.error('Erreur lors de la requête:', error));
-  };
-  
+ 
   
   const handleUploadImage = async (productId) => {
     try {
@@ -643,12 +628,6 @@ import Modal from "react-modal";
         >
           Créer cet article
         </button>
-
-<button onClick={handleUploadFile}>Télécharger le fichier</button>
-
-
-
-
         </div>
       </div>
     </Modal>
